@@ -1,6 +1,5 @@
 # Installation
-- Build project
-- Make sure SearchEngines.xml file is located in target folder 
+- Build project 
 - Create schema in name of 'crawler' in MySQL
 - Import sql files in 'CrawlerDatabase' to MySQL (in MySQL Workbench, 'server->data import') 
 - Change database information in db.conf file (use your own database information)
