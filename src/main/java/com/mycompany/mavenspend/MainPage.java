@@ -8,13 +8,11 @@ package com.mycompany.mavenspend;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.security.CodeSource;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import javax.xml.bind.JAXBContext;
@@ -31,15 +29,13 @@ public class MainPage {
     
     private String connectionUrl;
     private Connection con;
-    private Connection con2;
-    
+    private Connection con2;   
     
     private int maxPage=10;
     private int maxThreadAnalysis=3;
     private Thread[] threadAnalysis;
     private Thread[] threadArray;
-    private Thread[] threadSearchQueue;
-    
+    private Thread[] threadSearchQueue;   
     
     private String searchQuery;
     
@@ -54,23 +50,23 @@ public class MainPage {
         
         
         try{
-             int crawlId = createCrawl(searchQuery, "SearchEngineCrawler");
+            int crawlId = createCrawl(searchQuery, "SearchEngineCrawler");
             threadArray=new Thread[maxPage];
             
             String[] selist = getSearchEngineNamesArray();
             
             int j = 0;
-        for (Object se : selist) {
-            WorkerSearchQueue sworker = new WorkerSearchQueue( se.toString(), crawlId, connectionUrl);
-            sworker.setName("Worker " + se.toString());
-            //threadArray[i++] = sworker;
-            threadSearchQueue[j++] = sworker;
-            sworker.start();
+            for (Object se : selist) 
+            {
+                WorkerSearchQueue sworker = new WorkerSearchQueue( se.toString(), crawlId, connectionUrl);
+                sworker.setName("Worker " + se.toString());            
+                threadSearchQueue[j++] = sworker;
+                sworker.start();
             try {
-
                 Thread.sleep(300);
-            } catch (Exception ex) {
-            }//  search(getSearchEngineFromName((String) se));
+            } 
+            catch (Exception ex) {
+            }
         }
             
             for(int i=0; i<maxThreadAnalysis; i++)
@@ -103,7 +99,8 @@ public class MainPage {
     }
    
     
-    private String getConnectionString() {
+    private String getConnectionString()
+    {
         String fileString;
         try {
             FileInputStream inputStream = new FileInputStream("db.conf");
@@ -130,10 +127,10 @@ public class MainPage {
                         case "Schema":
                             Schema = text;
                             break;
-
                     }
-                } catch (Exception ex) {
-
+                } 
+                catch (Exception ex) {
+                    System.out.println(ex.getMessage());
                 }
             }
             inputStream.close();
@@ -145,11 +142,11 @@ public class MainPage {
         } 
     }
     
+    
     private void createSearchQueue()
     {
         try{
-            String st=getSearchQuery();
-            
+            String st=getSearchQuery();            
             
             String[] selist = getSearchEngineNamesArray();
            
@@ -168,17 +165,11 @@ public class MainPage {
             System.out.println(ex.getMessage());
         }
     }
+       
     
-    
-    
-    
-    public int createCrawl(String queryText, String crawlerName) {
+    public int createCrawl(String queryText, String crawlerName) 
+    {
         try {
-          /*  Connection con;
-            String connectionUrl;
-             connectionUrl=getConnectionString();
-             Class.forName("com.mysql.jdbc.Driver");   
-            con=DriverManager.getConnection(connectionUrl);*/
             String SQL = "SELECT max(crawlid) FROM crawlrecord";
             Statement stmt = con.createStatement();
             ResultSet rs = stmt.executeQuery(SQL);
@@ -205,7 +196,7 @@ public class MainPage {
             stmt.close();
             return id + 1;
         } catch (Exception ex) {
-
+            System.out.println(ex.getMessage());
         }
         return 0;
     }
@@ -237,6 +228,7 @@ public class MainPage {
 
     }
     
+   
     private SearchEngines getSearchEnginesFromXml() {
         try {
             File file = new File("SearchEngines.xml");
@@ -252,6 +244,5 @@ public class MainPage {
             e.printStackTrace();
         }
         return null;
-    }
-    
+    }    
 }
