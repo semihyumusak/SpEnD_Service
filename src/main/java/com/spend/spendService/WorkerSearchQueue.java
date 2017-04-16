@@ -18,7 +18,6 @@ import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
 import com.google.common.net.InternetDomainName;
 import java.awt.EventQueue;
 import java.awt.Toolkit;
-import java.io.Console;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -28,7 +27,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.sql.Struct;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -37,7 +35,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
-import javax.print.attribute.standard.DateTimeAtCompleted;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -77,14 +74,8 @@ public class WorkerSearchQueue extends Thread {
     /**
      * run do the work.
      */
-    private void initQueue() {
-
-    }
-
     public void run() {
         initializeJdbc();
-        int percent = 0;
-        String msg = "";
         System.out.println("SimpleWorker.run : Thread "
                 + Thread.currentThread().getName() + " started");
 
@@ -453,70 +444,6 @@ public class WorkerSearchQueue extends Thread {
                             insertSeedLink(url, searchEngineName,queryText, prevExtractedUrlCount + count, pageContentId);
                             previousUrls.add(url);           
                         }
-                    }
-                }
-            } catch (Exception ex) {
-
-            }
-        }
-
-        return count;
-
-    }
-
-    private int ExtractAndInsertSeedUrlsOld(String text, int pageNumber, int prevExtractedUrlCount, String searchEngineName) {
-
-        int pageContentId = insertPageContent(text, pageNumber, searchEngineName, crawlId, "");
-
-        HashSet<String> previousUrls = new HashSet<String>();
-
-        int count = 0;
-        int index = 0;
-        while (index > -1) {
-            index = text.indexOf("http://", index + 1);
-            int temp = text.indexOf('"', index + 10);
-
-            int tempparant = text.indexOf(')', index + 10);
-
-            try {
-                String rawurl = text.substring(index, temp);
-
-                if (index > -1) {
-                    String url = refineUrlString(rawurl, true);
-                    String encodedurl = "";
-
-                    if (!includesExcludedKeyword(url, searchEngineName) && !previousUrls.contains(url)) {
-                        count++;                    
-                        previousUrls.add(url);                  
-                    }
-                }
-            } catch (Exception ex) {
-
-            }
-        }
-        index = 0;
-        while (index > -1) {
-            index = text.indexOf("http%3a%2f%2f", index + 1);
-
-            int temp = text.indexOf('"', index + 10);
-            try {
-                String rawurl = text.substring(index, temp);
-                if (index > -1) {
-                    String url = refineUrlString(rawurl, false);
-
-                    boolean excludeMatch = includesExcludedKeyword(url, searchEngineName);
-                    if (!excludeMatch && !previousUrls.contains(url)) {
-                        String encodedurl = "";
-                        try {
-                            encodedurl = URLDecoder.decode(url, "ISO-8859-1");
-                            url = encodedurl;
-                        } catch (Exception ex) {
-
-                        }
-                        count++;
-                        
-                        previousUrls.add(url);
-                                  
                     }
                 }
             } catch (Exception ex) {
