@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.mycompany.mavenspend;
+package com.spend.spendService;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.ElementNotFoundException;
@@ -16,7 +16,6 @@ import com.gargoylesoftware.htmlunit.html.HtmlInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
 import com.google.common.net.InternetDomainName;
-import java.awt.AWTEvent;
 import java.awt.EventQueue;
 import java.awt.Toolkit;
 import java.io.Console;
@@ -53,7 +52,6 @@ public class WorkerSearchQueue extends Thread {
     public static int MAXWORK = 10;
     private int crawlId;
     private int maxPage;
-    // private String query;
     private EventQueue eventQueue = null;
     private int MAXSLEEP = 3000;
     private boolean running = true;
@@ -61,17 +59,9 @@ public class WorkerSearchQueue extends Thread {
     private SearchEngine searchEngine;
     String connectionUrl = "jdbc:mysql://127.0.0.1/crawler?" + "user=admin&password=12345";
     Connection con;
-    // The component which will receive the event.
-  //  private java.awt.Component target = null;
-
-    /**
-     * The event destination is target !
-     */
-    WorkerSearchQueue(/*java.awt.Component target,*/ String se, int crawlId,String connectionString) {
-       // this.target = target;
+    
+    WorkerSearchQueue(String se, int crawlId,String connectionString) {
         this.searchEngine = getSearchEngineFromName(se);
-     //   this.maxPage = ((MainForm) target).maxPage;
-        // this.query = searchText;
         this.MAXSLEEP = this.searchEngine.waitIntervalMs;
         this.crawlId = crawlId;
         this.connectionUrl = connectionString;
@@ -99,25 +89,7 @@ public class WorkerSearchQueue extends Thread {
                 + Thread.currentThread().getName() + " started");
 
         eventQueue = Toolkit.getDefaultToolkit().getSystemEventQueue();
-
-//        while (running) {
-//            count++;
-//            if (count >= MAXWORK) {
-//                running = false;
-//            }
-//
-//            msg = "Message from " + Thread.currentThread().getName()
-//                    + " : " + count;
-//
-//            eventQueue.postEvent(new EventSearchWorker(target, msg, count));
-//
-//            try {
-//                this.sleep(800);
-//            } catch (Exception e) {
-//                System.out.println("E:run : " + e.toString());
-//            }
-//        }
-//        eventQueue.postEvent(new EventSearchWorker(target, "deneme\n", count));
+        
         final WebClient webClient = new WebClient(getBrowserVersionFromName(searchEngine.getDefaultBrowser()));//BrowserVersion.FIREFOX_24);
 
         while (running) {
@@ -133,9 +105,6 @@ public class WorkerSearchQueue extends Thread {
         }
         webClient.close();
 
-     //   target.dispatchEvent(new EventSearchWorker(target, "", count, this.searchEngine.getName() + " completed.."));
-
-//        eventQueue.postEvent(new EventSearchWorker(target, "Work done..", count));
         System.out.println("SimpleWorker.run : Thread "
                 + Thread.currentThread().getName() + " stoped");
     }                       // run
@@ -199,7 +168,6 @@ public class WorkerSearchQueue extends Thread {
             }
             selectstmt.close();
             rs.close();
-            // return id + 1;
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
         }
@@ -217,23 +185,14 @@ public class WorkerSearchQueue extends Thread {
         try {
             System.out.println(searchEngine.name + " ilk aramaya girdi: " + (new Timestamp(System.currentTimeMillis())).toString());
 
-            // webClient.getOptions().setThrowExceptionOnScriptError(false);
             String htmlSource;
             HtmlPage searchResultPage = null;
-//            String baseUrl = url;
-            //    System.out.println(searchEngine.name+ " ilk aramaya baslayacak: "+ (new Timestamp(System.currentTimeMillis())).toString());
             int numberOfUrlsExtracted;
             searchResultPage = clickSearchButtonMainPage(webClient, searchEngine, query.queryText);
-            htmlSource = searchResultPage.asXml();//searchResultPage.getWebResponse().getContentAsString();
+            htmlSource = searchResultPage.asXml();
             
             numberOfUrlsExtracted = ExtractAndInsertSeedUrls(searchResultPage, htmlSource, 1, 0, searchEngine.getName(), query.queryText);
-//           if(numberOfUrlsExtracted<3)
-//           {
-//               
-//           }
-            
-       //     target.dispatchEvent(new EventSearchWorker(target, 1));
-            //   System.out.println(searchEngine.name+ " ilk aramaya bitti: "+ (new Timestamp(System.currentTimeMillis())).toString());
+
             failIncrementalSleep = 0;
             Random r = new Random();
             int randomSleepTime = r.nextInt(MAXSLEEP);//minimum 200 ms max 2200 ms
@@ -251,16 +210,13 @@ public class WorkerSearchQueue extends Thread {
                     searchResultPage = ha.click();
                     htmlSource = searchResultPage.getWebResponse().getContentAsString();
                     numberOfUrlsExtracted = ExtractAndInsertSeedUrls(searchResultPage, htmlSource, i + 1, numberOfUrlsExtracted, searchEngine.getName(), query.queryText);
-                    // nextUrl = getNextUrl(b, se, baseUrl);
-         //           target.dispatchEvent(new EventSearchWorker(target, 1));
+                   
                     System.out.println(searchEngine.name + " " + String.valueOf(i) + " sonraki arama bitti: " + (new Timestamp(System.currentTimeMillis())).toString());
 
                 }
-                // fw.close();
             } catch (Exception ex) {
                 String x = ex.getMessage();
             }
-            // webClient.closeAllWindows();
         } catch (Exception ex) {
             String x = ex.getMessage();
             try {
@@ -269,9 +225,6 @@ public class WorkerSearchQueue extends Thread {
             } catch (Exception eex) {
             }
         }
-
-     //   webClient.closeAllWindows();
-
     }
 
     public Object getNextButtonOrLink(HtmlPage page, final String id) {
@@ -283,14 +236,10 @@ public class WorkerSearchQueue extends Thread {
 
         for (final HtmlAnchor anchor : page.getAnchors()) {
 
-            //txtSeeds.append(anchor.asXml());
-            //System.out.println(anchor.asXml());
             String anchortext = anchor.asXml();
             System.out.println(anchortext+"\n");
             try {
                 anchortext = URLDecoder.decode(anchortext, "ISO-8859-1");
-
-//                System.out.println(anchor.asXml());
             } catch (Exception ex) {
 
             }
@@ -304,46 +253,18 @@ public class WorkerSearchQueue extends Thread {
     public List<String> getAnchorLinks(HtmlPage page, final String id) throws ElementNotFoundException {
         WebAssert.notNull("text", id);
 
-//         List<HtmlAnchor> anchorlist= new ArrayList<HtmlAnchor>();
-//        for (final HtmlAnchor anchor : page.getAnchors()) {
-//
-//            //txtSeeds.append(anchor.asXml());
-//            System.out.println(anchor.asXml());
-//            String anchortext = anchor.asXml();
-//            try {
-//                anchortext = URLDecoder.decode(anchortext, "ISO-8859-1");
-//
-////                System.out.println(anchor.asXml());
-//            } catch (Exception ex) {
-//
-//            }
-//            if (anchortext.contains("url")) {
-//                anchorlist.add(anchor);
-//            }
-//        }
-//        return anchorlist;
-        //throw new ElementNotFoundException("a", "<text>", id);
         WebAssert.notNull("text", id);
         List<String> urls = new ArrayList<String>();
         for (final HtmlAnchor anchor : page.getAnchors()) {
 
-            //txtSeeds.append(anchor.asXml());
             String anchortext = anchor.asXml();
             if (anchortext.contains(id)) {
-                //  System.out.println(anchor.asXml());
 
                 try {
                     anchortext = URLDecoder.decode(anchortext, "ISO-8859-1");
                     int start = 0;
 
                     while (start != -1) {
-//                        start = anchortext.indexOf("href=\"http", start);
-//                        int end = anchortext.indexOf('"', start + 10);
-//
-//                        if (start != -1) {
-//                            urls.add(anchortext.substring(start + 6, end));
-//                            start = end;
-//                    }
                            start = anchortext.indexOf("href=", start);
                         if (start != -1) {
                             start = anchortext.indexOf("http", start);
@@ -364,7 +285,6 @@ public class WorkerSearchQueue extends Thread {
             }
         }
         return urls;
-        //throw new ElementNotFoundException("a", "<text>", id);
     }
 
     private HtmlPage clickSearchButtonMainPage(final WebClient webClient, SearchEngine se, String query) {
@@ -375,9 +295,6 @@ public class WorkerSearchQueue extends Thread {
         String searchButtonName = se.getSubmitButtonName();
         Object tempSubmitFromName, tempSubmitFromId, tempSubmitFromTagName;
         try {
-//            Random r = new Random();
-//            int randomSleepTime = r.nextInt(MAXSLEEP) + 2000;//minimum 200 ms max 2200 ms
-//            Thread.sleep(randomSleepTime);
 
             HtmlPage page1 = webClient.getPage(url);
 
@@ -386,7 +303,6 @@ public class WorkerSearchQueue extends Thread {
                 input1.setValueAttribute(query);
                 tempSubmitFromName = page1.getElementByName(searchButtonName);
                 return clickButtonReturnPage(tempSubmitFromName);
-//                baseUrl = page1.getUrl().toString();
             } catch (Exception ex) {
                 String aaa = "deneme";
             }
@@ -395,7 +311,6 @@ public class WorkerSearchQueue extends Thread {
                 input1.setValueAttribute(query);
                 tempSubmitFromId = page1.getElementById(searchButtonId);
                 return clickButtonReturnPage(tempSubmitFromId);
-                //               baseUrl = page1.getUrl().toString();
             } catch (Exception ex2) {
                 String aaa = "deneme";
             }
@@ -404,7 +319,6 @@ public class WorkerSearchQueue extends Thread {
                 input1.setValueAttribute(query);
                 tempSubmitFromTagName = page1.getElementsByTagName("button").get(0);
                 return clickButtonReturnPage(tempSubmitFromTagName);
-//                baseUrl = page1.getUrl().toString();
             } catch (Exception ex2) {
                 String aaa = "deneme";
             }
@@ -422,13 +336,12 @@ public class WorkerSearchQueue extends Thread {
 
             HtmlSubmitInput htmlsubmit;
             HtmlButton htmlbutton;
-            //   a = "";
             if (tempsubmit.getClass().getName().contains("HtmlButton")) {
                 htmlbutton = (HtmlButton) tempsubmit;
-                return htmlbutton.click();//.getWebResponse().getContentAsString();
+                return htmlbutton.click();
             } else if (tempsubmit.getClass().getName().contains("HtmlSubmitInput")) {
                 htmlsubmit = (HtmlSubmitInput) tempsubmit;
-                return htmlsubmit.click();//.getWebResponse().getContentAsString();
+                return htmlsubmit.click();
             }
             
         } catch (FailingHttpStatusCodeException fex) {
@@ -499,9 +412,7 @@ public class WorkerSearchQueue extends Thread {
                         }
                         count++;
                         insertSeedLink(url, searchEngineName, queryText, prevExtractedUrlCount + count, pageContentId);
-                        previousUrls.add(url);
-                     //   target.dispatchEvent(new EventSearchWorker(target, searchEngineName + ":" + url + "\n", count, ""));
-//           
+                        previousUrls.add(url);           
                     }
                 }
             } catch (Exception ex) {
@@ -509,7 +420,6 @@ public class WorkerSearchQueue extends Thread {
             }
         }
         while (urlStartIndex > -1) {
-            // index = text.indexOf("href=\"/url?q=http", index + 1);
             int indexencoded = text.indexOf("http://", urlStartIndex + 1);
             int indexnotencoded = text.indexOf("http%3a%2f%2f", urlStartIndex + 1);
             urlStartIndex = returnMinPositiveInteger(indexencoded, indexnotencoded);
@@ -541,9 +451,7 @@ public class WorkerSearchQueue extends Thread {
                             }
                             count++;
                             insertSeedLink(url, searchEngineName,queryText, prevExtractedUrlCount + count, pageContentId);
-                            previousUrls.add(url);
-                           // target.dispatchEvent(new EventSearchWorker(target, searchEngineName + ":" + url + "\n", count, ""));
-//           
+                            previousUrls.add(url);           
                         }
                     }
                 }
@@ -565,7 +473,6 @@ public class WorkerSearchQueue extends Thread {
         int count = 0;
         int index = 0;
         while (index > -1) {
-            // index = text.indexOf("href=\"/url?q=http", index + 1);
             index = text.indexOf("http://", index + 1);
             int temp = text.indexOf('"', index + 10);
 
@@ -579,10 +486,8 @@ public class WorkerSearchQueue extends Thread {
                     String encodedurl = "";
 
                     if (!includesExcludedKeyword(url, searchEngineName) && !previousUrls.contains(url)) {
-                        count++;
-                       // insertSeedLink(url, searchEngineName,queryText, prevExtractedUrlCount + count, pageContentId);
-                        previousUrls.add(url);
-                        //target.dispatchEvent(new EventSearchWorker(target, searchEngineName + ":" + url + "\n", count, ""));
+                        count++;                    
+                        previousUrls.add(url);                  
                     }
                 }
             } catch (Exception ex) {
@@ -591,7 +496,6 @@ public class WorkerSearchQueue extends Thread {
         }
         index = 0;
         while (index > -1) {
-            // index = text.indexOf("href=\"/url?q=http", index + 1);
             index = text.indexOf("http%3a%2f%2f", index + 1);
 
             int temp = text.indexOf('"', index + 10);
@@ -610,11 +514,9 @@ public class WorkerSearchQueue extends Thread {
 
                         }
                         count++;
-                        //insertSeedLink(url, searchEngineName, queryText, prevExtractedUrlCount + count, pageContentId);
                         
                         previousUrls.add(url);
-                        
-//           
+                                  
                     }
                 }
             } catch (Exception ex) {
@@ -632,7 +534,6 @@ public class WorkerSearchQueue extends Thread {
             String host = u.getHost();
             if (InternetDomainName.isValid(host) || com.google.common.net.HostSpecifier.isValid(host)) {
 
-                //InternetDomainName.from(host).topPrivateDomain().toString();
                 PreparedStatement pstmt
                         = con.prepareStatement("INSERT INTO seedurlraw (url, searchEngine,resultOrder,pageContentId) VALUES (?,?,?,?);");
                 pstmt.setString(1, url);
@@ -645,7 +546,6 @@ public class WorkerSearchQueue extends Thread {
                 
                 DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
                         Object[] row = {searchEngineName,text,url,dateFormat.format(new Date())};
-            //            target.dispatchEvent(new EventSearchWorker(target,row , count, ""));
                         
             }
         } catch (Exception ex) {
@@ -722,7 +622,6 @@ public class WorkerSearchQueue extends Thread {
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
             SearchEngines searchEngineList = (SearchEngines) jaxbUnmarshaller.unmarshal(file);
             return searchEngineList;
-//		System.out.println(searchEngineList.getSearchEngines());
 
         } catch (JAXBException e) {
             e.printStackTrace();

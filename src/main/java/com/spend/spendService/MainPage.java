@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.mycompany.mavenspend;
+package com.spend.spendService;
 
 
 import java.io.File;
@@ -83,7 +83,6 @@ public class MainPage {
         }
     }
    
-    
     private void connectionJdbc()
     {
         try{
@@ -190,7 +189,6 @@ public class MainPage {
             pstmt.setInt(1, id + 1);
             pstmt.setString(2, crawlerName);
             pstmt.setString(3, queryText);
-//Statement stmt = con.createStatement();
             pstmt.executeUpdate();
             pstmt.close();
             stmt.close();
@@ -238,7 +236,6 @@ public class MainPage {
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
             SearchEngines searchEngineList = (SearchEngines) jaxbUnmarshaller.unmarshal(file);
             return searchEngineList;
-//		System.out.println(searchEngineList.getSearchEngines());
 
         } catch (JAXBException e) {
             e.printStackTrace();

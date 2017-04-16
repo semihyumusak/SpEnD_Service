@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.mycompany.mavenspend;
+package com.spend.spendService;
 
 import com.hp.hpl.jena.query.*;
 import com.hp.hpl.jena.rdf.model.Resource;

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.mycompany.mavenspend;
+package com.spend.spendService;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.ElementNotFoundException;
@@ -46,15 +46,9 @@ public class WorkerAnalyze extends Thread {
     private int count = 0;
     String connectionUrl = "jdbc:mysql://127.0.0.1/crawler?" + "user=admin&password=12345";
     Connection con;
-int threadNumber, numberOfThreads;
-    // The component which will receive the event.
-  //  private java.awt.Component target = null;
-
-    /**
-     * The event destination is target !
-     */
-    WorkerAnalyze(/*java.awt.Component target,*/ String connectionString, int threadNumber, int numberOfThreads) {
-      //  this.target = target;
+    int threadNumber, numberOfThreads;
+    
+    WorkerAnalyze(String connectionString, int threadNumber, int numberOfThreads) {
         this.connectionUrl = connectionString;
         this.threadNumber = threadNumber;
         this.numberOfThreads = numberOfThreads;
@@ -103,13 +97,10 @@ int threadNumber, numberOfThreads;
         }
         System.out.println("WorkerAnalyzer.run : Thread "
                 + Thread.currentThread().getName() + Thread.currentThread().getId() + " stopped");
-
-//        target.dispatchEvent(new SimpleAWTEvent(target, "", count,this.ana+" completed.."));
-//        eventQueue.postEvent(new SimpleAWTEvent(target, "Work done..", count));
-//        System.out.println("SimpleWorker.run : Thread "
-//                + Thread.currentThread().getName() + " stoped");
     }                       // run
-private int getUnprocessedSeedUrlId() throws SQLException {
+    
+    
+    private int getUnprocessedSeedUrlId() throws SQLException {
         PreparedStatement pstmt
                 = con.prepareStatement("select id,url from seedurlraw where isEndpoint is null and MOD(id,?)=? order by id asc;");
         // execute the query, and get a java resultset
@@ -129,24 +120,7 @@ private int getUnprocessedSeedUrlId() throws SQLException {
         pstmt.close();
         return 0;
     }
-//    private int getUnprocessedSeedUrlId() throws SQLException {
-//        PreparedStatement pstmt
-//                = con.prepareStatement("select id,url from seedurlraw where isEndpoint is null order by id asc;");
-//        // execute the query, and get a java resultset
-//        ResultSet rs = pstmt.executeQuery();;
-//
-//        // iterate through the java resultset
-//        while (rs.next()) {
-//            int id = rs.getInt("id");
-//            rs.close();
-//            pstmt.close();
-//            return id;
-//            //String firstName = rs.getString("url");
-//        }
-//        rs.close();
-//        pstmt.close();
-//        return 0;
-//    }
+
 
     private int isKnownEndpoint(String url) throws SQLException {
 
@@ -188,15 +162,11 @@ private int getUnprocessedSeedUrlId() throws SQLException {
                     pstmt.close();
                     return temp;
                 }
-                //burayı sildim çünkü endpoint olsa da false işaretlediği yerler olabiliyor. 
-//                } else if (temp == 1) {
-//                    isEndpoint = temp;
-//                }
             }
             rs.close();
             pstmt.close();
         } catch (Exception ex) {
-
+            System.out.println(ex.getMessage());
         }
         return isEndpoint;
     }
@@ -271,6 +241,7 @@ private int getUnprocessedSeedUrlId() throws SQLException {
         }
         return text;
     }
+    
     public static String extractUrlRemoveEndingDash(String text) {
         List<String> containedUrls = new ArrayList<String>();
         String urlRegex = "((https?|ftp|gopher|telnet|file):((//)|(\\\\))+[\\w\\d:#@%/;$()~_?\\+-=\\\\\\.&]*)";
@@ -306,31 +277,21 @@ private int getUnprocessedSeedUrlId() throws SQLException {
         int isKnownEndpoint = isKnownEndpoint(url);
         if (isKnownEndpoint > 0) {
             updateSeedUrlFromId(urlid, isKnownEndpoint); //update for sparql endpoint
-//            urlid = getUnprocessedSeedUrlId();
-//            url = getSeedUrlFromId(urlid);
         } else {
-//            Random r = new Random();
-//            int randomSleepTime = r.nextInt(5000) + 200;//minimum 200 ms max 2200 ms
-//            Thread.sleep(randomSleepTime);
             if (JenaSparql.isSparqlEndpoint(url)) {
                 updateSeedUrlFromId(urlid, 2); //update for sparql endpoint
-//                urlid = getUnprocessedSeedUrlId();
-//                url = getSeedUrlFromId(urlid);
             } else {
-
                 String tempurl = extractUrl(url);
                 if (!tempurl.equals(url)) {
-                    if (JenaSparql.isSparqlEndpoint(tempurl)) {
-                        
+                    if (JenaSparql.isSparqlEndpoint(tempurl)) {                       
                         updateSeedUrlFromId(urlid, 2,extractUrlRemoveEndingDash(tempurl));
                     } else {
                         updateSeedUrlFromId(urlid, 1,tempurl);// update for non-endpoint                    
                     }
-                } else {
+                } 
+                else {
                     updateSeedUrlFromId(urlid, 1);
                 }
-//                urlid = getUnprocessedSeedUrlId();
-//                url = getSeedUrlFromId(urlid);
             }
         }
         return true;
