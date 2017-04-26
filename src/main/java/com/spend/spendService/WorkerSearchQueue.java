@@ -94,7 +94,7 @@ public class WorkerSearchQueue extends Thread {
                 }
             }
         }
-        webClient.close();
+        webClient.closeAllWindows();//.close();
 
         System.out.println("SimpleWorker.run : Thread "
                 + Thread.currentThread().getName() + " stoped");
@@ -605,13 +605,13 @@ public class WorkerSearchQueue extends Thread {
             case "google":
                 return BrowserVersion.CHROME;
             case "firefox":
-                return BrowserVersion.FIREFOX_45;
+                return BrowserVersion.FIREFOX_24;//.FIREFOX_45;
             case "mozilla":
-                return BrowserVersion.FIREFOX_45;
+                return BrowserVersion.FIREFOX_24;//.FIREFOX_45;
             case "explorer":
-                return BrowserVersion.INTERNET_EXPLORER;
+                return BrowserVersion.INTERNET_EXPLORER_11;//.INTERNET_EXPLORER;
             case "internetexplorer":
-                return BrowserVersion.INTERNET_EXPLORER;
+                return BrowserVersion.INTERNET_EXPLORER_11;//.INTERNET_EXPLORER;
             default:
                 return BrowserVersion.getDefault();
 
