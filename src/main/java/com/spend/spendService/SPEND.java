@@ -11,8 +11,14 @@ package com.spend.spendService;
  */
 public class SPEND {
     public static void main(String args[])
-    {
+    {  
         MainPage mp=new MainPage();
         mp.main();
+        
+        SearchText st=new SearchText();
+        st.main();
+        
+        DomainLearning dl=new DomainLearning();
+        dl.main();
     }
 }
