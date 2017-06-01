@@ -94,6 +94,7 @@ public class MainPage {
         catch(Exception ex)
         {
             System.out.println(ex.getMessage());
+		System.out.println(connectionUrl);
         }
     }
    
@@ -137,6 +138,7 @@ public class MainPage {
 
         } 
         catch (Exception ex) {
+System.out.println("Error"+ ex.getMessage());
             return "jdbc:mysql://localhost/crawler?user=root&password=62217769";
         } 
     }
@@ -145,8 +147,7 @@ public class MainPage {
     private void createSearchQueue()
     {
         try{
-            String st=getSearchQuery();            
-            
+            String st=getSearchQuery();                        
             String[] selist = getSearchEngineNamesArray();
            
             for (Object se : selist) {               
