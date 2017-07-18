@@ -93,8 +93,8 @@ public class MainPage {
         }
         catch(Exception ex)
         {
-            System.out.println(ex.getMessage());
-		System.out.println(connectionUrl);
+            System.out.println("ERROR connectionJdbc function in MainPage.java "+ex.getMessage());
+		//System.out.println(connectionUrl);
         }
     }
    
@@ -138,7 +138,7 @@ public class MainPage {
 
         } 
         catch (Exception ex) {
-System.out.println("Error"+ ex.getMessage());
+            System.out.println("Error getConnectionString function in MainPage.java "+ ex.getMessage());
             return "jdbc:mysql://localhost/crawler?user=root&password=62217769";
         } 
     }

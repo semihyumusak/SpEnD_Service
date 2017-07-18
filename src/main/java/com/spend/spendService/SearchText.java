@@ -65,7 +65,7 @@ public class SearchText {
             };
             Timer timer=new Timer();
             DateFormat dateformat=new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-            Date date=dateformat.parse("02-06-2017 00:00:00"); // set time and date
+            Date date=dateformat.parse("20-07-2017 00:00:00"); // set time and date
             timer.schedule(timertask, date, 1000*60*60*24); // for 24 hour 1000*60*60*24
         }
         catch(Exception ex){

@@ -6,8 +6,6 @@
 package com.spend.spendService;
 
 
-import java.awt.EventQueue;
-import java.awt.Toolkit;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -24,7 +22,6 @@ import java.util.regex.Pattern;
  */
 public class WorkerAnalyze extends Thread {
 
-    private EventQueue eventQueue = null;
     private boolean running = true;
     private int count = 0;
     String connectionUrl = "jdbc:mysql://127.0.0.1/crawler?" + "user=admin&password=12345";
@@ -53,7 +50,6 @@ public class WorkerAnalyze extends Thread {
         System.out.println("WorkerAnalyzer.run : Thread "
                 + Thread.currentThread().getName() + Thread.currentThread().getId() + " started");
 
-        eventQueue = Toolkit.getDefaultToolkit().getSystemEventQueue();
 
         boolean wait = false;
         while (running) {
@@ -280,6 +276,7 @@ public class WorkerAnalyze extends Thread {
             con = DriverManager.getConnection(connectionUrl);
         } catch (Exception ex) {
             String a = ex.getMessage();
+            System.out.println("workeranalyze.java / mysql baglanti sorunu "+a);
         }
     }
 }

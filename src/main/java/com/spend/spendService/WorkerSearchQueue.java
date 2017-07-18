@@ -16,8 +16,6 @@ import com.gargoylesoftware.htmlunit.html.HtmlInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
 import com.google.common.net.InternetDomainName;
-import java.awt.EventQueue;
-import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -49,7 +47,6 @@ public class WorkerSearchQueue extends Thread {
     public static int MAXWORK = 10;
     private int crawlId;
     private int maxPage;
-    private EventQueue eventQueue = null;
     private int MAXSLEEP = 3000;
     private boolean running = true;
     private int count = 0;
@@ -78,11 +75,9 @@ public class WorkerSearchQueue extends Thread {
         initializeJdbc();
         System.out.println("SimpleWorker.run : Thread "
                 + Thread.currentThread().getName() + " started");
-
-        eventQueue = Toolkit.getDefaultToolkit().getSystemEventQueue();
         
         final WebClient webClient = new WebClient(getBrowserVersionFromName(searchEngine.getDefaultBrowser()));//BrowserVersion.FIREFOX_24);
-
+        
         while (running) {
             if (hasSearchQuery()) {
                 search(getNextSearchQuery(), webClient);
@@ -94,7 +89,7 @@ public class WorkerSearchQueue extends Thread {
                 }
             }
         }
-        webClient.closeAllWindows();//.close();
+        webClient.close();
 
         System.out.println("SimpleWorker.run : Thread "
                 + Thread.currentThread().getName() + " stoped");
@@ -356,6 +351,7 @@ public class WorkerSearchQueue extends Thread {
             con = DriverManager.getConnection(connectionUrl);
         } catch (Exception ex) {
             String a = ex.getMessage();
+            System.out.println("workersearchqueue.java / mysql baglanti sorunu "+a);
         }
     }
 
@@ -543,8 +539,7 @@ public class WorkerSearchQueue extends Thread {
     private SearchEngines getSearchEnginesFromXml() {
         try {
             File file = new File("SearchEngines.xml");
-            JAXBContext jaxbContext = JAXBContext.newInstance(SearchEngines.class
-            );
+            JAXBContext jaxbContext = JAXBContext.newInstance(SearchEngines.class);
 
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
             SearchEngines searchEngineList = (SearchEngines) jaxbUnmarshaller.unmarshal(file);
@@ -605,13 +600,13 @@ public class WorkerSearchQueue extends Thread {
             case "google":
                 return BrowserVersion.CHROME;
             case "firefox":
-                return BrowserVersion.FIREFOX_24;//.FIREFOX_45;
+                return BrowserVersion.FIREFOX_45;
             case "mozilla":
-                return BrowserVersion.FIREFOX_24;//.FIREFOX_45;
+                return BrowserVersion.FIREFOX_45;
             case "explorer":
-                return BrowserVersion.INTERNET_EXPLORER_11;//.INTERNET_EXPLORER;
+                return BrowserVersion.INTERNET_EXPLORER;
             case "internetexplorer":
-                return BrowserVersion.INTERNET_EXPLORER_11;//.INTERNET_EXPLORER;
+                return BrowserVersion.INTERNET_EXPLORER;
             default:
                 return BrowserVersion.getDefault();
 
